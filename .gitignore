@@ -49,3 +49,6 @@ coverage.xml
 
 # Linux
 *.swp
+
+# Dataset folder
+rgbd_dataset_freiburg1_xyz/
