@@ -1,3 +1,5 @@
+# filename: deepslam.py
+
 import os
 import numpy as np
 import cv2
@@ -12,16 +14,17 @@ import time
 
 device = torch.device("cpu")
 
-# ... (previous code remains the same) ...
+# Modify the print function to write to a file
+def write_to_file(text, file):
+    with open(file, 'a') as f:
+        f.write(text + '\n')
+
 def read_file_list(filename):
-    """
-    Reads a trajectory from a text file.
-    """
     file = open(filename)
     data = file.read()
-    lines = data.replace(","," ").replace("\t"," ").split("\n")
-    list = [[v.strip() for v in line.split(" ") if v.strip()!=""] for line in lines if len(line)>0 and line[0]!="#"]
-    list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
+    lines = data.replace(",", " ").replace("\t", " ").split("\n")
+    list = [[v.strip() for v in line.split(" ") if v.strip() != ""] for line in lines if len(line) > 0 and line[0] != "#"]
+    list = [(float(l[0]), l[1:]) for l in list if len(l) > 1]
     return dict(list)
 
 class TUM_RGBD_Dataset(Dataset):
@@ -35,7 +38,6 @@ class TUM_RGBD_Dataset(Dataset):
                                        sep=' ', comment='#', header=None,
                                        names=['timestamp', 'tx', 'ty', 'tz', 'qx', 'qy', 'qz', 'qw'])
 
-        # Synchronize RGB and depth images
         self.rgb_timestamps = list(self.rgb_dict.keys())
         self.depth_timestamps = list(self.depth_dict.keys())
         self.synced_timestamps = self.synchronize_timestamps()
@@ -44,7 +46,7 @@ class TUM_RGBD_Dataset(Dataset):
         synced = []
         for rgb_time in self.rgb_timestamps:
             depth_time = min(self.depth_timestamps, key=lambda x: abs(x - rgb_time))
-            if abs(rgb_time - depth_time) < 0.02:  # 20ms threshold
+            if abs(rgb_time - depth_time) < 0.02:
                 synced.append((rgb_time, depth_time))
         return synced
 
@@ -60,30 +62,17 @@ class TUM_RGBD_Dataset(Dataset):
         rgb_img = Image.open(rgb_path)
         depth_img = Image.open(depth_path)
 
-        # Print image modes to debug
-        print(f"RGB image mode: {rgb_img.mode}, Depth image mode: {depth_img.mode}")
-
-        # Ensure depth image is in 'L' mode (grayscale)
         if depth_img.mode != 'L':
-            print(f"Converting depth image from {depth_img.mode} to 'L'")
             depth_img = depth_img.convert('L')
 
-        # Transform images
         if self.transform:
             rgb_img = self.transform(rgb_img)
+            depth_img = self.transform(depth_img)
 
-            try:
-                depth_img = self.transform(depth_img)
-            except Exception as e:
-                print(f"Error transforming depth image: {e}")
-                raise
-
-        # Get the closest ground truth pose
         closest_gt = self.groundtruth.iloc[(self.groundtruth['timestamp'] - rgb_time).abs().argsort()[0]]
         pose = closest_gt[['tx', 'ty', 'tz']].values
 
         return rgb_img, depth_img, pose
-
 
 class FeatureExtractor(nn.Module):
     def __init__(self):
@@ -93,7 +82,7 @@ class FeatureExtractor(nn.Module):
         self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
         self.fc1 = nn.Linear(256 * 8 * 8, 512)
-        self.fc2 = nn.Linear(512, 3)  # Output 3D pose (x, y, z)
+        self.fc2 = nn.Linear(512, 3)
         self.feature_extraction_time = 0
         self.feature_extraction_count = 0
 
@@ -131,7 +120,6 @@ class SLAM:
         loss.backward()
         self.optimizer.step()
 
-        # Update position and map
         self.current_position = gt_pose.detach().cpu().numpy().squeeze()
         self.trajectory.append(self.current_position)
         self.map[tuple(self.current_position)] = features.detach().cpu().numpy().squeeze()
@@ -143,6 +131,7 @@ class SLAM:
 
 def main():
     base_dir = 'rgbd_dataset_freiburg1_xyz'
+    output_file = 'output_deepslam.txt'
 
     transform = transforms.Compose([
         transforms.Resize((64, 64)),
@@ -163,18 +152,18 @@ def main():
 
         if i % 10 == 0:
             checkpoint_start, checkpoint_end = slam.checkpoint_times[-1]
-            print(f"Frame {i}, Loss: {loss:.4f}, Position: {slam.current_position}")
-            print(f"Checkpoint time: {checkpoint_end - checkpoint_start:.4f} seconds")
+            write_to_file(f"Frame {i}, Loss: {loss:.4f}, Position: {slam.current_position}", output_file)
+            write_to_file(f"Checkpoint time: {checkpoint_end - checkpoint_start:.4f} seconds", output_file)
 
     total_end_time = time.time()
 
-    print("SLAM completed. Total frames processed:", len(dataset))
-    print(f"Total runtime: {total_end_time - total_start_time:.2f} seconds")
+    write_to_file(f"SLAM completed. Total frames processed: {len(dataset)}", output_file)
+    write_to_file(f"Total runtime: {total_end_time - total_start_time:.2f} seconds", output_file)
 
     avg_feature_extraction_time = slam.feature_extractor.feature_extraction_time / slam.feature_extractor.feature_extraction_count
-    print(f"Average feature extraction time: {avg_feature_extraction_time:.4f} seconds")
-    print(f"Total features extracted: {slam.feature_extractor.feature_extraction_count}")
-    print(f"Total feature extraction time: {slam.feature_extractor.feature_extraction_time:.2f} seconds")
+    write_to_file(f"Average feature extraction time: {avg_feature_extraction_time:.4f} seconds", output_file)
+    write_to_file(f"Total features extracted: {slam.feature_extractor.feature_extraction_count}", output_file)
+    write_to_file(f"Total feature extraction time: {slam.feature_extractor.feature_extraction_time:.2f} seconds", output_file)
 
 if __name__ == "__main__":
     main()

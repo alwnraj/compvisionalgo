@@ -1,3 +1,5 @@
+#filename: efficientalgo.py
+
 import os
 import numpy as np
 import cv2
@@ -6,11 +8,17 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, models
+from torchvision.models import EfficientNet_B0_Weights
 import pandas as pd
 from PIL import Image
 import time
 
 device = torch.device("cpu")
+
+# Modify the print function to write to a file
+def write_to_file(text, file):
+    with open(file, 'a') as f:
+        f.write(text + '\n')
 
 def read_file_list(filename):
     """
@@ -18,9 +26,9 @@ def read_file_list(filename):
     """
     file = open(filename)
     data = file.read()
-    lines = data.replace(","," ").replace("\t"," ").split("\n")
-    list = [[v.strip() for v in line.split(" ") if v.strip()!=""] for line in lines if len(line)>0 and line[0]!="#"]
-    list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
+    lines = data.replace(",", " ").replace("\t", " ").split("\n")
+    list = [[v.strip() for v in line.split(" ") if v.strip() != ""] for line in lines if len(line) > 0 and line[0] != "#"]
+    list = [(float(l[0]), l[1:]) for l in list if len(l) > 1]
     return dict(list)
 
 class TUM_RGBD_Dataset(Dataset):
@@ -72,7 +80,7 @@ class TUM_RGBD_Dataset(Dataset):
 class EfficientNetFeatureExtractor(nn.Module):
     def __init__(self):
         super(EfficientNetFeatureExtractor, self).__init__()
-        self.efficientnet = models.efficientnet_b0(pretrained=True)
+        self.efficientnet = models.efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT) # I'm using the up-to-date models since it is throwing errors at me
         self.efficientnet.classifier = nn.Identity()  # Remove the final classification layer
 
         # Modify the first convolutional layer to accept 6 channels
@@ -124,6 +132,7 @@ class SLAM:
 
 def main():
     base_dir = 'rgbd_dataset_freiburg1_xyz'
+    output_file = 'output_efficientnetb0.txt'
 
     transform = transforms.Compose([
         transforms.Resize((224, 224)),  # EfficientNet-B0 expects 224x224 input
@@ -145,18 +154,18 @@ def main():
 
         if i % 10 == 0:
             checkpoint_start, checkpoint_end = slam.checkpoint_times[-1]
-            print(f"Frame {i}, Loss: {loss:.4f}, Position: {slam.current_position}")
-            print(f"Checkpoint time: {checkpoint_end - checkpoint_start:.4f} seconds")
+            write_to_file(f"Frame {i}, Loss: {loss:.4f}, Position: {slam.current_position}", output_file)
+            write_to_file(f"Checkpoint time: {checkpoint_end - checkpoint_start:.4f} seconds", output_file)
 
     total_end_time = time.time()
 
-    print("SLAM completed. Total frames processed:", len(dataset))
-    print(f"Total runtime: {total_end_time - total_start_time:.2f} seconds")
+    write_to_file(f"SLAM completed. Total frames processed: {len(dataset)}", output_file)
+    write_to_file(f"Total runtime: {total_end_time - total_start_time:.2f} seconds", output_file)
 
     avg_feature_extraction_time = slam.feature_extractor.feature_extraction_time / slam.feature_extractor.feature_extraction_count
-    print(f"Average feature extraction time: {avg_feature_extraction_time:.4f} seconds")
-    print(f"Total features extracted: {slam.feature_extractor.feature_extraction_count}")
-    print(f"Total feature extraction time: {slam.feature_extractor.feature_extraction_time:.2f} seconds")
+    write_to_file(f"Average feature extraction time: {avg_feature_extraction_time:.4f} seconds", output_file)
+    write_to_file(f"Total features extracted: {slam.feature_extractor.feature_extraction_count}", output_file)
+    write_to_file(f"Total feature extraction time: {slam.feature_extractor.feature_extraction_time:.2f} seconds", output_file)
 
 if __name__ == "__main__":
     main()
