@@ -6,7 +6,7 @@ Computer Vision algorithm implementation with rgb-d dataset
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/deepslam.git
+git clone https://github.com/alwnraj/compvisionalgo.git
 ```
 
 ### Step 2: Setting up a virtual environment
