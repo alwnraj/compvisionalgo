@@ -1,0 +1,90 @@
+RGB-Only SLAM Execution Log
+Frame 0, Loss: 1.7355, Frame Time: 0.2875s, Running Time: 0.32s, Avg Frame Time: 0.2875s
+Frame 10, Loss: 0.0026, Frame Time: 0.2188s, Running Time: 3.51s, Avg Frame Time: 0.2976s
+Frame 20, Loss: 0.0107, Frame Time: 0.2277s, Running Time: 7.86s, Avg Frame Time: 0.4077s
+Frame 30, Loss: 0.0246, Frame Time: 0.2508s, Running Time: 11.07s, Avg Frame Time: 0.2956s
+Frame 40, Loss: 0.0014, Frame Time: 0.3600s, Running Time: 14.09s, Avg Frame Time: 0.2775s
+Frame 50, Loss: 0.0028, Frame Time: 0.3699s, Running Time: 17.51s, Avg Frame Time: 0.3165s
+Frame 60, Loss: 0.0029, Frame Time: 0.2211s, Running Time: 20.58s, Avg Frame Time: 0.2842s
+Frame 70, Loss: 0.0048, Frame Time: 0.2517s, Running Time: 23.32s, Avg Frame Time: 0.2528s
+Frame 80, Loss: 0.0034, Frame Time: 0.2408s, Running Time: 26.05s, Avg Frame Time: 0.2521s
+Frame 90, Loss: 0.0101, Frame Time: 0.2245s, Running Time: 28.68s, Avg Frame Time: 0.2395s
+Frame 100, Loss: 0.0015, Frame Time: 0.2595s, Running Time: 31.51s, Avg Frame Time: 0.2615s
+Frame 110, Loss: 0.0120, Frame Time: 0.2192s, Running Time: 34.32s, Avg Frame Time: 0.2604s
+Frame 120, Loss: 0.0036, Frame Time: 0.2602s, Running Time: 36.99s, Avg Frame Time: 0.2454s
+Frame 130, Loss: 0.0068, Frame Time: 0.2603s, Running Time: 39.72s, Avg Frame Time: 0.2515s
+Frame 140, Loss: 0.0023, Frame Time: 0.2233s, Running Time: 42.55s, Avg Frame Time: 0.2597s
+Frame 150, Loss: 0.0016, Frame Time: 0.4499s, Running Time: 45.59s, Avg Frame Time: 0.2799s
+Frame 160, Loss: 0.0401, Frame Time: 0.4224s, Running Time: 49.74s, Avg Frame Time: 0.3877s
+Frame 170, Loss: 0.0019, Frame Time: 0.5831s, Running Time: 54.70s, Avg Frame Time: 0.4678s
+Frame 180, Loss: 0.0006, Frame Time: 0.5546s, Running Time: 60.66s, Avg Frame Time: 0.5687s
+Frame 190, Loss: 0.0005, Frame Time: 0.2334s, Running Time: 64.15s, Avg Frame Time: 0.3255s
+Frame 200, Loss: 0.0003, Frame Time: 0.4294s, Running Time: 67.57s, Avg Frame Time: 0.3183s
+Frame 210, Loss: 0.0048, Frame Time: 0.2332s, Running Time: 70.92s, Avg Frame Time: 0.3095s
+Frame 220, Loss: 0.0059, Frame Time: 0.2651s, Running Time: 74.15s, Avg Frame Time: 0.3009s
+Frame 230, Loss: 0.0018, Frame Time: 0.2470s, Running Time: 76.98s, Avg Frame Time: 0.2605s
+Frame 240, Loss: 0.0004, Frame Time: 0.2565s, Running Time: 79.78s, Avg Frame Time: 0.2587s
+Frame 250, Loss: 0.0012, Frame Time: 0.2185s, Running Time: 82.42s, Avg Frame Time: 0.2409s
+Frame 260, Loss: 0.0056, Frame Time: 0.5186s, Running Time: 85.66s, Avg Frame Time: 0.3021s
+Frame 270, Loss: 0.0011, Frame Time: 0.5718s, Running Time: 90.72s, Avg Frame Time: 0.4814s
+Frame 280, Loss: 0.0029, Frame Time: 0.5969s, Running Time: 95.86s, Avg Frame Time: 0.4877s
+Frame 290, Loss: 0.0037, Frame Time: 0.7884s, Running Time: 104.83s, Avg Frame Time: 0.8701s
+Frame 300, Loss: 0.0008, Frame Time: 0.6744s, Running Time: 113.79s, Avg Frame Time: 0.8653s
+Frame 310, Loss: 0.0003, Frame Time: 0.4159s, Running Time: 121.61s, Avg Frame Time: 0.7511s
+Frame 320, Loss: 0.0013, Frame Time: 0.2573s, Running Time: 124.81s, Avg Frame Time: 0.2961s
+Frame 330, Loss: 0.0001, Frame Time: 0.2333s, Running Time: 127.57s, Avg Frame Time: 0.2526s
+Frame 340, Loss: 0.0008, Frame Time: 0.2375s, Running Time: 130.24s, Avg Frame Time: 0.2463s
+Frame 350, Loss: 0.0020, Frame Time: 0.2294s, Running Time: 132.88s, Avg Frame Time: 0.2423s
+Frame 360, Loss: 0.0000, Frame Time: 0.2159s, Running Time: 135.76s, Avg Frame Time: 0.2648s
+Frame 370, Loss: 0.0001, Frame Time: 0.2713s, Running Time: 138.31s, Avg Frame Time: 0.2324s
+Frame 380, Loss: 0.0001, Frame Time: 0.2322s, Running Time: 141.14s, Avg Frame Time: 0.2599s
+Frame 390, Loss: 0.0020, Frame Time: 0.2240s, Running Time: 143.79s, Avg Frame Time: 0.2425s
+Frame 400, Loss: 0.0096, Frame Time: 0.2656s, Running Time: 146.84s, Avg Frame Time: 0.2836s
+Frame 410, Loss: 0.0043, Frame Time: 0.2423s, Running Time: 149.73s, Avg Frame Time: 0.2667s
+Frame 420, Loss: 0.0002, Frame Time: 0.2482s, Running Time: 152.67s, Avg Frame Time: 0.2727s
+Frame 430, Loss: 0.0064, Frame Time: 0.2538s, Running Time: 155.41s, Avg Frame Time: 0.2537s
+Frame 440, Loss: 0.0006, Frame Time: 0.2775s, Running Time: 158.02s, Avg Frame Time: 0.2401s
+Frame 450, Loss: 0.0008, Frame Time: 0.2614s, Running Time: 160.72s, Avg Frame Time: 0.2492s
+Frame 460, Loss: 0.0005, Frame Time: 0.2308s, Running Time: 163.68s, Avg Frame Time: 0.2737s
+Frame 470, Loss: 0.0031, Frame Time: 0.2152s, Running Time: 166.79s, Avg Frame Time: 0.2879s
+Frame 480, Loss: 0.0005, Frame Time: 0.2496s, Running Time: 169.51s, Avg Frame Time: 0.2494s
+Frame 490, Loss: 0.0016, Frame Time: 0.2592s, Running Time: 172.66s, Avg Frame Time: 0.2927s
+Frame 500, Loss: 0.0003, Frame Time: 0.6184s, Running Time: 176.86s, Avg Frame Time: 0.3969s
+Frame 510, Loss: 0.0002, Frame Time: 0.4714s, Running Time: 183.31s, Avg Frame Time: 0.6149s
+Frame 520, Loss: 0.0025, Frame Time: 0.4848s, Running Time: 188.44s, Avg Frame Time: 0.4867s
+Frame 530, Loss: 0.0031, Frame Time: 0.4412s, Running Time: 191.81s, Avg Frame Time: 0.3115s
+Frame 540, Loss: 0.0025, Frame Time: 0.2599s, Running Time: 194.65s, Avg Frame Time: 0.2600s
+Frame 550, Loss: 0.0005, Frame Time: 0.2771s, Running Time: 197.57s, Avg Frame Time: 0.2689s
+Frame 560, Loss: 0.0025, Frame Time: 0.2579s, Running Time: 200.63s, Avg Frame Time: 0.2807s
+Frame 570, Loss: 0.0008, Frame Time: 0.2134s, Running Time: 203.15s, Avg Frame Time: 0.2311s
+Frame 580, Loss: 0.0013, Frame Time: 0.2664s, Running Time: 205.98s, Avg Frame Time: 0.2571s
+Frame 590, Loss: 0.0001, Frame Time: 0.5771s, Running Time: 210.65s, Avg Frame Time: 0.4407s
+Frame 600, Loss: 0.0005, Frame Time: 0.2710s, Running Time: 213.64s, Avg Frame Time: 0.2750s
+Frame 610, Loss: 0.0009, Frame Time: 0.9947s, Running Time: 217.69s, Avg Frame Time: 0.3804s
+Frame 620, Loss: 0.0006, Frame Time: 0.2274s, Running Time: 220.54s, Avg Frame Time: 0.2626s
+Frame 630, Loss: 0.0030, Frame Time: 0.2472s, Running Time: 223.59s, Avg Frame Time: 0.2809s
+Frame 640, Loss: 0.0023, Frame Time: 0.4564s, Running Time: 227.02s, Avg Frame Time: 0.3189s
+Frame 650, Loss: 0.0004, Frame Time: 0.2990s, Running Time: 230.83s, Avg Frame Time: 0.3569s
+Frame 660, Loss: 0.0003, Frame Time: 0.2363s, Running Time: 234.85s, Avg Frame Time: 0.3770s
+Frame 670, Loss: 0.0005, Frame Time: 0.2392s, Running Time: 238.79s, Avg Frame Time: 0.3684s
+Frame 680, Loss: 0.0006, Frame Time: 0.2661s, Running Time: 242.41s, Avg Frame Time: 0.3382s
+Frame 690, Loss: 0.0027, Frame Time: 0.2545s, Running Time: 245.39s, Avg Frame Time: 0.2748s
+Frame 700, Loss: 0.0012, Frame Time: 0.3097s, Running Time: 248.64s, Avg Frame Time: 0.3008s
+Frame 710, Loss: 0.0001, Frame Time: 0.2276s, Running Time: 251.19s, Avg Frame Time: 0.2326s
+Frame 720, Loss: 0.0001, Frame Time: 0.2175s, Running Time: 254.08s, Avg Frame Time: 0.2650s
+Frame 730, Loss: 0.0004, Frame Time: 0.6315s, Running Time: 257.65s, Avg Frame Time: 0.3362s
+Frame 740, Loss: 0.0009, Frame Time: 0.2703s, Running Time: 260.81s, Avg Frame Time: 0.2893s
+Frame 750, Loss: 0.0006, Frame Time: 0.2356s, Running Time: 263.46s, Avg Frame Time: 0.2408s
+Frame 760, Loss: 0.0001, Frame Time: 0.2200s, Running Time: 265.95s, Avg Frame Time: 0.2273s
+Frame 770, Loss: 0.0004, Frame Time: 0.4371s, Running Time: 269.05s, Avg Frame Time: 0.2876s
+Frame 780, Loss: 0.0002, Frame Time: 0.2950s, Running Time: 273.29s, Avg Frame Time: 0.3980s
+Frame 790, Loss: 0.0002, Frame Time: 0.4136s, Running Time: 276.29s, Avg Frame Time: 0.2770s
+
+Final Stats:
+Total runtime: 278.51 seconds
+Frames processed: 798
+Average frame processing time: 0.3251 seconds
+Average forward pass time: 0.1137 seconds
+Average backward pass time: 0.2098 seconds
+Average optimizer time: 0.0015 seconds
+Average data loading time: 0.0232 seconds

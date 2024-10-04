@@ -1,7 +1,6 @@
-# filename: efficientnetalgo.py
+# filename: simple_efficientnet.py
 import os
 import numpy as np
-import cv2
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -30,76 +29,50 @@ def read_file_list(filename):
     list = [(float(l[0]), l[1:]) for l in list if len(l) > 1]
     return dict(list)
 
-
-class TUM_RGBD_Dataset(Dataset):
+class TUM_RGBD_Dataset_RGB_Only(Dataset):
     def __init__(self, base_dir, transform=None):
         self.base_dir = base_dir
         self.transform = transform
-
+        
         self.rgb_dict = read_file_list(os.path.join(base_dir, 'rgb.txt'))
-        self.depth_dict = read_file_list(os.path.join(base_dir, 'depth.txt'))
         self.groundtruth = pd.read_csv(os.path.join(base_dir, 'groundtruth.txt'),
-                                       sep=' ', comment='#', header=None,
-                                       names=['timestamp', 'tx', 'ty', 'tz', 'qx', 'qy', 'qz', 'qw'])
-
-        self.rgb_timestamps = list(self.rgb_dict.keys())
-        self.depth_timestamps = list(self.depth_dict.keys())
-        self.synced_timestamps = self.synchronize_timestamps()
-
-    def synchronize_timestamps(self):
-        synced = []
-        for rgb_time in self.rgb_timestamps:
-            depth_time = min(self.depth_timestamps, key=lambda x: abs(x - rgb_time))
-            if abs(rgb_time - depth_time) < 0.02:
-                synced.append((rgb_time, depth_time))
-        return synced
+                                      sep=' ', comment='#', header=None,
+                                      names=['timestamp', 'tx', 'ty', 'tz', 'qx', 'qy', 'qz', 'qw'])
+        
+        self.timestamps = sorted(list(self.rgb_dict.keys()))
 
     def __len__(self):
-        return len(self.synced_timestamps)
+        return len(self.timestamps)
 
     def __getitem__(self, idx):
-        rgb_time, depth_time = self.synced_timestamps[idx]
-
-        rgb_path = os.path.join(self.base_dir, self.rgb_dict[rgb_time][0])
-        depth_path = os.path.join(self.base_dir, self.depth_dict[depth_time][0])
-
+        timestamp = self.timestamps[idx]
+        
+        # Get RGB image
+        rgb_path = os.path.join(self.base_dir, self.rgb_dict[timestamp][0])
         rgb_img = Image.open(rgb_path).convert('RGB')
-        depth_img = Image.open(depth_path).convert('RGB')
-
+        
         if self.transform:
             rgb_img = self.transform(rgb_img)
-            depth_img = self.transform(depth_img)
-
-        closest_gt = self.groundtruth.iloc[(self.groundtruth['timestamp'] - rgb_time).abs().argsort()[0]]
+        
+        # Get ground truth pose
+        closest_gt = self.groundtruth.iloc[(self.groundtruth['timestamp'] - timestamp).abs().argsort()[0]]
         pose = closest_gt[['tx', 'ty', 'tz']].values.astype(np.float32)
+        
+        return rgb_img, torch.tensor(pose)
 
-        return rgb_img, depth_img, torch.tensor(pose)
-
-class EfficientNetFeatureExtractor(nn.Module):
+class EfficientNetRGBOnly(nn.Module):
     def __init__(self):
-        super(EfficientNetFeatureExtractor, self).__init__()
+        super(EfficientNetRGBOnly, self).__init__()
         self.efficientnet = models.efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT)
-        
-        # Modify first layer to accept 6 channels (RGB + Depth)
-        original_layer = self.efficientnet.features[0][0]
-        self.efficientnet.features[0][0] = nn.Conv2d(6, 32, kernel_size=3, stride=2, padding=1, bias=False)
-        
-        # Initializing the new layer with weights from the pretrained model
-        with torch.no_grad():
-            new_weights = torch.zeros_like(self.efficientnet.features[0][0].weight)
-            new_weights[:, :3, :, :] = original_layer.weight
-            new_weights[:, 3:, :, :] = original_layer.weight
-            self.efficientnet.features[0][0].weight = nn.Parameter(new_weights)
-        
         self.efficientnet.classifier = nn.Linear(1280, 3)
         
         # Time tracking
         self.forward_time = 0
         self.forward_count = 0
 
-    def forward(self, x):
+    def forward(self, rgb):
         start_time = time.time()
-        features = self.efficientnet.features(x)
+        features = self.efficientnet.features(rgb)
         features = self.efficientnet.avgpool(features)
         features = features.flatten(start_dim=1)
         pose = self.efficientnet.classifier(features)
@@ -108,25 +81,23 @@ class EfficientNetFeatureExtractor(nn.Module):
         self.forward_time += (end_time - start_time)
         self.forward_count += 1
         
-        return pose, features
+        return pose
 
-class SLAM:
+class SimpleSLAM:
     def __init__(self):
-        self.feature_extractor = EfficientNetFeatureExtractor().to(device)
-        self.optimizer = optim.Adam(self.feature_extractor.parameters(), lr=0.001)
+        self.model = EfficientNetRGBOnly().to(device)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.criterion = nn.MSELoss()
-        self.map = {}
-        self.current_position = np.array([0.0, 0.0, 0.0])
-        self.trajectory = [self.current_position]
-        
-        # Timing metrics
+        self.trajectory = []
         self.frame_times = []
+        
+        # Additional timing metrics
         self.data_loading_times = []
         self.forward_times = []
         self.backward_times = []
         self.optimizer_times = []
 
-    def update(self, rgb, depth, gt_pose):
+    def update(self, rgb, gt_pose):
         frame_start_time = time.time()
         
         # Optimizer step timing
@@ -137,23 +108,21 @@ class SLAM:
         
         # Forward pass timing
         forward_start = time.time()
-        x = torch.cat((rgb, depth), dim=1)
-        estimated_pose, features = self.feature_extractor(x)
+        estimated_pose = self.model(rgb)
         forward_time = time.time() - forward_start
         self.forward_times.append(forward_time)
         
         # Backward pass timing
         backward_start = time.time()
-        loss = self.criterion(estimated_pose, gt_pose.float())
+        loss = self.criterion(estimated_pose, gt_pose)
         loss.backward()
         self.optimizer.step()
         backward_time = time.time() - backward_start
         self.backward_times.append(backward_time)
-
-        self.current_position = gt_pose.detach().cpu().numpy().squeeze()
-        self.trajectory.append(self.current_position)
-        self.map[tuple(self.current_position)] = features.detach().cpu().numpy().squeeze()
-
+        
+        current_position = gt_pose.detach().cpu().numpy()
+        self.trajectory.append(current_position)
+        
         frame_end_time = time.time()
         frame_duration = frame_end_time - frame_start_time
         self.frame_times.append(frame_duration)
@@ -162,42 +131,40 @@ class SLAM:
 
 def main():
     base_dir = 'rgbd_dataset_freiburg1_xyz'
-    output_file = 'output_efficientnetb0.txt'
-    #output_file = 'original_efficientnetb0.txt' 
-
-    write_to_file("EfficientNet-B0 SLAM (RGB+Depth) Execution Log", output_file)
-
+    output_file = 'output_simple_efficientnet.txt'
+    
+    write_to_file("RGB-Only SLAM Execution Log", output_file)
+    
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-
-    dataset = TUM_RGBD_Dataset(base_dir, transform=transform)
+    
+    dataset = TUM_RGBD_Dataset_RGB_Only(base_dir, transform=transform)
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
-
-    slam = SLAM()
-
+    
+    slam = SimpleSLAM()
+    
     total_start_time = time.time()
-    prev_iter_end = total_start_time
-
-    for i, (rgb, depth, gt_pose) in enumerate(dataloader):
+    
+    for i, (rgb, gt_pose) in enumerate(dataloader):
         data_load_end_time = time.time()
-        data_load_time = data_load_end_time - prev_iter_end
+        data_load_time = data_load_end_time - (total_start_time if i == 0 else prev_iter_end)
         slam.data_loading_times.append(data_load_time)
         
-        rgb, depth, gt_pose = rgb.to(device), depth.to(device), gt_pose.to(device)
-        loss, frame_time, forward_time, backward_time, optimizer_time = slam.update(rgb, depth, gt_pose)
-
+        rgb, gt_pose = rgb.to(device), gt_pose.to(device)
+        loss, frame_time, forward_time, backward_time, optimizer_time = slam.update(rgb, gt_pose)
+        
         if i % 10 == 0:
             current_time = time.time() - total_start_time
             avg_frame_time = np.mean(slam.frame_times[-10:]) if slam.frame_times else 0
             append_to_file(f"Frame {i}, Loss: {loss:.4f}, Frame Time: {frame_time:.4f}s, Running Time: {current_time:.2f}s, Avg Frame Time: {avg_frame_time:.4f}s", output_file)
         
         prev_iter_end = time.time()
-
+    
     total_time = time.time() - total_start_time
-
+    
     # Final statistics
     append_to_file("\nFinal Stats:", output_file)
     append_to_file(f"Total runtime: {total_time:.2f} seconds", output_file)

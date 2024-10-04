@@ -30,3 +30,11 @@ python3 deepslam.py
 ```bash
 python3 efficientalgo.py
 ```
+
+### simple_efficientnet
+
+- Removed Feature Extraction: The EfficientNetFeatureExtractor class and any references to feature extraction have been removed.
+
+- Direct Pose Prediction: The EfficientNetRGBOnly class now directly predicts the pose (x, y, z) using the EfficientNet model's classifier, without any intermediate feature extraction.
+
+- Simplified SLAM: The SLAM class has been renamed to SimpleSLAM to reflect the removal of the mapping and feature-based aspects. The update method now directly takes RGB images and ground truth poses.
