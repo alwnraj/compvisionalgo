@@ -1,22 +1,24 @@
 #!/bin/bash
 
-# Start time for both scripts
-start_time=$(date +%s)
+# Create/clear the total_runtime.txt file
+echo "" > total_runtime.txt
 
-# Run both scripts in the background
-python3 efficientnetalgo.py &
-PID1=$!
+echo "Running feature_extract.py and object_classifier.py..."
+start_time=$(date +%s.%N)
+python feature_extract.py
+python object_classifier.py
+end_time=$(date +%s.%N)
 
-python3 simple_efficientnet.py &
-PID2=$!
+runtime1=$(echo "$end_time - $start_time" | bc)
+echo "Runtime for feature extraction and object classification: $runtime1 seconds" >> total_runtime.txt
 
-# Wait for both scripts to finish
-wait $PID1
-wait $PID2
+echo "Running feature_extract.py and vslam.py..."
+start_time=$(date +%s.%N)
+python feature_extract.py
+python vslam.py
+end_time=$(date +%s.%N)
 
-# End time
-end_time=$(date +%s)
+runtime2=$(echo "$end_time - $start_time" | bc)
+echo "Runtime for feature extraction and VSLAM: $runtime2 seconds" >> total_runtime.txt
 
-# Calculate and print the total runtime
-total_runtime=$((end_time - start_time))
-echo "Both scripts finished in $total_runtime seconds" > total_runtime.txt
+echo "Total runtimes saved to total_runtime.txt"
