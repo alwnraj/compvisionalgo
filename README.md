@@ -34,3 +34,5 @@ python3 deepslam.py
 ```bash
 python3 efficientalgo.py
 ```
+
+- Added bash script to run both efficient and deepslam.
