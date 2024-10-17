@@ -1,20 +1,35 @@
 
 # this code uses runs object_classifier.py and vslam.py in parallel using the output from features_extract.py
+'''
+
+Thread Synchronization: Used threading.Event() to ensure VSLAM and classification only start after feature extraction is complete.
+Error Handling: Each thread reports success/failure through a queue, allowing the main thread to track completion status.
+Resource Management:
+
+- Prevents thread oversubscription with torch.set_num_threads(1)
+- Uses a shared feature file path
+- Progress Tracking: Prints status updates and timing information
+
+The script will:
+
+Extract features first
+Once features are ready, run VSLAM and object classification in parallel
+Report completion status and total processing time
+
+
+'''
 
 import threading
 import torch
 import time
 from queue import Queue
-import subprocess
-import os
-import sys
-from vslam import main as vslam_main
+from vslam import main as vslam_main 
 from object_classifier import main as classifier_main
 from feature_extract import extract_features_and_save
 
 class FeatureProcessor:
     def __init__(self):
-        self.feature_path = 'features.pt'
+        self.feature_path = 'features.pt' #takes in the output features.pt
         self.feature_ready = threading.Event()
         self.completion_queue = Queue()
 
@@ -22,7 +37,7 @@ class FeatureProcessor:
         """Extract features and notify threads when ready"""
         print("Starting feature extraction...")
         base_dir = 'rgbd_dataset_freiburg1_xyz'
-        extract_features_and_save(base_dir, self.feature_path)
+        extract_features_and_save(base_dir, self.feature_path) #uses feature_extract.py
         print("Feature extraction complete")
         self.feature_ready.set()
 
