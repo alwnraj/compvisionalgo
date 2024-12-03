@@ -58,13 +58,13 @@ class VSLAM:
         self.map_features = []  # Store features in a list
         self.map_poses = []    # Store poses in a list
 
-    def process_frame(self, features, gt_pose=None, index=None): # Add index argument
+    def process_frame(self, features, gt_pose=None, index=None): 
         self.model.train()
         self.optimizer.zero_grad()
-        
+
         estimated_pose = self.model.pose_head(features)
-        estimated_pose = estimated_pose.squeeze(0) 
-        
+        # No need to squeeze here: estimated_pose = estimated_pose.squeeze(0)
+
         if gt_pose is not None:
             loss = self.criterion(estimated_pose, gt_pose)
             loss.backward()

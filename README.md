@@ -34,3 +34,4 @@ python3 deepslam.py
 ```bash
 python3 efficientalgo.py
 ```
+- Use `parallelstream.py` for running feature extraction, object classification, and vslam in parallel.

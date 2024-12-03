@@ -1,3 +1,2 @@
 
-Runtime for feature extraction and object classification: 95.371727878 seconds
-Runtime for feature extraction and VSLAM: 101.149143680 seconds
+Runtime for feature extraction and object class & VSLAM: 65.579301305 seconds
